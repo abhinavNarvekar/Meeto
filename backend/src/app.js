@@ -12,7 +12,6 @@ import userRoutes from "./routes/user.routes.js";
 const app = express();
 
 const server = createServer(app);
-mongodb;
 const io = connectToSoSocket(server);
 app.set("port", process.env.PORT || 8080);
 app.use(cors());
