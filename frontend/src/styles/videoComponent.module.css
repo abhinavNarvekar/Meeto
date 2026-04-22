@@ -1,6 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════
    VIDEO COMPONENT — ZOOM-STYLE UI
-   All original class names preserved and enhanced
    ═══════════════════════════════════════════════════════════════ */
 
 /* ─── LOBBY SCREEN ─────────────────────────────────────────── */
@@ -151,7 +150,7 @@
   height: 100%;
   object-fit: cover;
   border-radius: 16px;
-  transform: scaleX(-1); /* mirror */
+  transform: scaleX(-1);
 }
 
 .lobbyVideoLabel {
@@ -244,7 +243,8 @@
   font-family: "DM Sans", "Segoe UI", sans-serif;
 }
 
-/* Video grid */
+/* ─── VIDEO GRID ────────────────────────────────────────────── */
+
 .conferenceView {
   display: flex;
   flex-wrap: wrap;
@@ -254,14 +254,13 @@
   gap: 14px;
   height: 100%;
   box-sizing: border-box;
+  overflow-y: auto;
 }
 
-.conferenceView video {
-  width: 40vw;
-  height: 20vh;
-  min-width: 30vw;
-  border-radius: 10px;
-}
+/* FIX: Removed the old `.conferenceView video { width/height }` rule that was
+   overriding .remoteVideo's object-fit: cover and causing the participant feed
+   to not fill its tile. All sizing is now handled by .remoteVideoTile +
+   .remoteVideo only. */
 
 .remoteVideoTile {
   position: relative;
@@ -284,11 +283,17 @@
   box-shadow: 0 8px 40px rgba(99, 102, 241, 0.15);
 }
 
+/* FIX: This is the critical rule — width/height 100% + object-fit cover
+   makes the participant stream fill the entire tile with no black bars. */
 .remoteVideo {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 16px;
+  display: block;
 }
 
 .videoTileLabel {
@@ -304,9 +309,11 @@
   padding: 4px 10px;
   border-radius: 20px;
   backdrop-filter: blur(8px);
+  z-index: 2;
 }
 
-/* Self-view (local) — floating bottom right */
+/* ─── SELF-VIEW (floating) ──────────────────────────────────── */
+
 .selfViewContainer {
   position: absolute;
   bottom: 90px;
@@ -319,6 +326,9 @@
     0 0 0 2px rgba(99, 102, 241, 0.3);
   z-index: 10;
   transition: box-shadow 0.2s ease;
+  background: #0d1424;
+  /* FIX: explicit aspect ratio so the self-view box has proper height */
+  aspect-ratio: 4 / 3;
 }
 
 .selfViewContainer:hover {
@@ -327,9 +337,14 @@
     0 0 0 2px rgba(99, 102, 241, 0.55);
 }
 
-/* Legacy: keep .meetUserVideo working */
+/* FIX: meetUserVideo must fill its container fully */
 .meetUserVideo {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
+  height: 100%;
+  object-fit: cover;
   display: block;
   border-radius: 16px;
   transform: scaleX(-1);
@@ -345,6 +360,7 @@
   padding: 3px 9px;
   border-radius: 20px;
   backdrop-filter: blur(8px);
+  z-index: 2;
 }
 
 /* ─── CONTROL BAR ───────────────────────────────────────────── */
@@ -383,7 +399,6 @@
   gap: 4px;
 }
 
-/* Regular control button */
 .ctrlBtn {
   display: flex;
   flex-direction: column;
@@ -422,12 +437,10 @@
 .ctrlBtn:hover span {
   color: #c7d2fe;
 }
-
 .ctrlBtn:active {
   transform: translateY(0);
 }
 
-/* Off state */
 .ctrlBtnOff {
   color: #f87171;
   background: rgba(248, 113, 113, 0.1);
@@ -444,14 +457,12 @@
   color: #fca5a5;
 }
 
-/* Active state (e.g. chat open) */
 .ctrlBtnActive {
   background: rgba(99, 102, 241, 0.2);
   border-color: rgba(99, 102, 241, 0.5);
   color: #818cf8;
 }
 
-/* End call */
 .ctrlBtnEnd {
   display: flex;
   flex-direction: column;
@@ -564,11 +575,9 @@
 .chattingDisplay::-webkit-scrollbar {
   width: 4px;
 }
-
 .chattingDisplay::-webkit-scrollbar-track {
   background: transparent;
 }
-
 .chattingDisplay::-webkit-scrollbar-thumb {
   background: rgba(99, 102, 241, 0.3);
   border-radius: 2px;
@@ -596,7 +605,6 @@
   align-self: flex-end;
   align-items: flex-end;
 }
-
 .messageBubbleWrapOther {
   align-self: flex-start;
   align-items: flex-start;

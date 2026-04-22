@@ -91,12 +91,14 @@ export default function Authentication() {
               {/* Tabs */}
               <div className="authTabs">
                 <button
+                  type="button"
                   className={`authTab ${formState === 0 ? "authTabActive" : ""}`}
                   onClick={() => setFormState(0)}
                 >
                   Sign In
                 </button>
                 <button
+                  type="button"
                   className={`authTab ${formState === 1 ? "authTabActive" : ""}`}
                   onClick={() => setFormState(1)}
                 >
@@ -154,7 +156,11 @@ export default function Authentication() {
 
                 {error && <div className="authError">{error}</div>}
 
-                <button className="authSubmitBtn" onClick={handleAuth}>
+                <button
+                  className="authSubmitBtn"
+                  type="button"
+                  onClick={handleAuth}
+                >
                   {formState === 0 ? "Sign In" : "Create Account"}
                 </button>
               </Box>
