@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
         password,
       });
 
-      if (request.status === httpStatus.CREATED) {
+      if (request.status >= 200 && request.status < 300) {
         return request.data.message;
       }
     } catch (err) {

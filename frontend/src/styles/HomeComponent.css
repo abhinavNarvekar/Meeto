@@ -1,0 +1,573 @@
+/* ═══════════════════════════════════════════════════════════════
+   HOME PAGE — NEXMEET DARK UI
+   Add these rules to App.css (or a Home.module.css)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── PAGE WRAPPER ─────────────────────────────────────────── */
+
+.homeWrapper {
+  min-height: 100vh;
+  background: #0a0f1e;
+  background-image:
+    radial-gradient(
+      ellipse 90% 55% at 50% -5%,
+      rgba(99, 102, 241, 0.22) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 50% 40% at 85% 85%,
+      rgba(139, 92, 246, 0.14) 0%,
+      transparent 55%
+    );
+  font-family: "DM Sans", "Segoe UI", sans-serif;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ambient orbs */
+.homeOrb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(80px);
+  opacity: 0.35;
+}
+.homeOrb1 {
+  width: 500px;
+  height: 500px;
+  top: -200px;
+  left: -150px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.5), transparent 70%);
+}
+.homeOrb2 {
+  width: 400px;
+  height: 400px;
+  top: 30%;
+  right: -120px;
+  background: radial-gradient(
+    circle,
+    rgba(139, 92, 246, 0.45),
+    transparent 70%
+  );
+}
+.homeOrb3 {
+  width: 300px;
+  height: 300px;
+  bottom: -100px;
+  left: 35%;
+  background: radial-gradient(
+    circle,
+    rgba(56, 189, 248, 0.25),
+    transparent 70%
+  );
+}
+
+/* ─── NAVBAR ────────────────────────────────────────────────── */
+
+.navBar {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 48px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  background: rgba(10, 15, 30, 0.6);
+}
+
+.navBrand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navBrandDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #6366f1;
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.9);
+  animation: pulseDot 2.2s ease-in-out infinite;
+}
+
+@keyframes pulseDot {
+  0%,
+  100% {
+    box-shadow: 0 0 8px rgba(99, 102, 241, 0.8);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 22px rgba(99, 102, 241, 1);
+    transform: scale(1.25);
+  }
+}
+
+.navBrandName {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #f1f5f9;
+}
+
+.navActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navHistoryBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  color: #94a3b8;
+  padding: 9px 16px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  font-family: inherit;
+  outline: none;
+}
+
+.navHistoryBtn:hover {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: rgba(99, 102, 241, 0.3);
+  color: #c7d2fe;
+  transform: translateY(-1px);
+}
+
+.navLogoutBtn {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 10px;
+  color: #fca5a5;
+  padding: 9px 18px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  font-family: inherit;
+  outline: none;
+}
+
+.navLogoutBtn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #fecaca;
+  transform: translateY(-1px);
+}
+
+/* ─── HERO LAYOUT ───────────────────────────────────────────── */
+
+.meetContainer {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 60px;
+  padding: 60px 48px 80px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ─── LEFT PANEL ────────────────────────────────────────────── */
+
+.leftPanel {
+  flex: 1;
+  max-width: 520px;
+  animation: fadeUp 0.7s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.heroContent {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.heroBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.28);
+  border-radius: 999px;
+  color: #818cf8;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  width: fit-content;
+}
+
+.heroBadgeDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+  animation: blink 1.6s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.heroHeading {
+  font-size: clamp(2.4rem, 5vw, 3.4rem);
+  font-weight: 800;
+  color: #f1f5f9;
+  line-height: 1.15;
+  letter-spacing: -0.04em;
+  margin: 0;
+}
+
+.heroHeadingAccent {
+  background: linear-gradient(135deg, #818cf8 0%, #a78bfa 60%, #38bdf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.heroSubtext {
+  font-size: 1rem;
+  color: #64748b;
+  line-height: 1.65;
+  margin: 0;
+  max-width: 400px;
+}
+
+/* ─── JOIN ROW ──────────────────────────────────────────────── */
+
+.joinRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.joinInputWrap {
+  flex: 1;
+  min-width: 180px;
+}
+
+.joinBtn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  border: none;
+  border-radius: 14px;
+  padding: 15px 24px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 24px rgba(99, 102, 241, 0.4);
+  font-family: inherit;
+  outline: none;
+}
+
+.joinBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 36px rgba(99, 102, 241, 0.55);
+  background: linear-gradient(135deg, #7274f3 0%, #9d6ff8 100%);
+}
+
+.joinBtn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.joinBtn:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+/* ─── STATS ─────────────────────────────────────────────────── */
+
+.heroStats {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-top: 8px;
+}
+
+.heroStat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.heroStatNum {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  letter-spacing: -0.02em;
+}
+
+.heroStatLabel {
+  font-size: 0.72rem;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.heroStatDivider {
+  width: 1px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+/* ─── RIGHT PANEL (mock call card) ─────────────────────────── */
+
+.rightPanel {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeUp 0.7s 0.15s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.mockCallCard {
+  position: relative;
+  width: 380px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(99, 102, 241, 0.18);
+  border-radius: 24px;
+  padding: 20px;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+    0 32px 80px rgba(0, 0, 0, 0.6),
+    0 0 80px rgba(99, 102, 241, 0.08);
+  backdrop-filter: blur(20px);
+  overflow: hidden;
+}
+
+.mockCallGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.mockTile {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #0d1424;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 10px 28px;
+  transition: border-color 0.2s;
+}
+
+.mockTile:hover {
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.mockTileMain {
+  grid-column: 1 / -1;
+  padding: 28px 10px 36px;
+}
+
+.mockAvatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.mockTileMain .mockAvatar {
+  width: 64px;
+  height: 64px;
+  font-size: 1.6rem;
+}
+
+.mockAvatarBlue {
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.5);
+}
+.mockAvatarPurple {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.45);
+}
+.mockAvatarTeal {
+  background: linear-gradient(135deg, #0ea5e9, #0284c7);
+  box-shadow: 0 4px 16px rgba(14, 165, 233, 0.4);
+}
+.mockAvatarOrange {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  box-shadow: 0 4px 16px rgba(249, 115, 22, 0.4);
+}
+
+.mockTileLabel {
+  position: absolute;
+  bottom: 8px;
+  left: 10px;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.65);
+  background: rgba(0, 0, 0, 0.45);
+  padding: 3px 8px;
+  border-radius: 20px;
+  backdrop-filter: blur(6px);
+}
+
+.mockControls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.mockBtn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s;
+}
+
+.mockBtn:hover {
+  transform: scale(1.08);
+}
+
+.mockBtnRed {
+  background: #ef4444;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.45);
+  color: #fff;
+}
+.mockBtnGray {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+}
+
+.mockBadge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.72rem;
+  padding: 4px 10px;
+  backdrop-filter: blur(8px);
+}
+
+.mockBadgeDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 6px #22c55e;
+  animation: blink 1.6s ease-in-out infinite;
+}
+
+/* Hide the raw logo img if mockCallCard is shown; or show it subtly */
+.mockLogoImg {
+  display: none; /* Replaced by the mock card UI */
+}
+
+/* ─── RESPONSIVE ────────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .meetContainer {
+    flex-direction: column;
+    padding: 40px 24px 60px;
+    gap: 40px;
+    text-align: center;
+    align-items: center;
+  }
+
+  .leftPanel {
+    max-width: 100%;
+  }
+
+  .heroSubtext {
+    max-width: 100%;
+  }
+
+  .joinRow {
+    justify-content: center;
+  }
+
+  .heroStats {
+    justify-content: center;
+  }
+
+  .heroBadge {
+    margin: 0 auto;
+  }
+
+  .mockCallCard {
+    width: 100%;
+    max-width: 380px;
+  }
+
+  .navBar {
+    padding: 14px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroHeading {
+    font-size: 2rem;
+  }
+  .joinRow {
+    flex-direction: column;
+  }
+  .joinBtn {
+    width: 100%;
+    justify-content: center;
+  }
+  .joinInputWrap {
+    width: 100%;
+  }
+}
