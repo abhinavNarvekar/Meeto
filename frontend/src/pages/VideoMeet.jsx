@@ -130,43 +130,31 @@ export default function VideoMeet() {
             }
           };
 
-          // ✅ FIX 1: Use ontrack instead of deprecated onaddstream
-          // onaddstream is not supported on mobile browsers (iOS Safari, Chrome Android)
+          // ontrack fires once per track (audio + video = 2 times).
+          // We must deduplicate by socketId so we don't add 2 video tiles per peer.
           connections.current[socketListId].ontrack = (event) => {
-            // event.streams[0] is the remote MediaStream
             const remoteStream = event.streams[0];
-
             if (!remoteStream) return;
 
-            let videoExists = videoRef.current.find(
-              (v) => v.socketId === socketListId,
-            );
+            setVideos((prevVideos) => {
+              // If this peer is already in the list, do nothing
+              const exists = prevVideos.find(
+                (v) => v.socketId === socketListId,
+              );
+              if (exists) return prevVideos;
 
-            if (videoExists) {
-              // Update existing entry only if stream actually changed
-              if (videoExists.stream?.id !== remoteStream.id) {
-                const updated = videoRef.current.map((v) =>
-                  v.socketId === socketListId
-                    ? { ...v, stream: remoteStream }
-                    : v,
-                );
-                videoRef.current = updated;
-                setVideos([...updated]);
-              }
-            } else {
-              const newVideo = {
-                socketId: socketListId,
-                stream: remoteStream,
-                autoPlay: true,
-                playsInline: true,
-              };
-
-              setVideos((prevVideos) => {
-                const updated = [...prevVideos, newVideo];
-                videoRef.current = updated;
-                return updated;
-              });
-            }
+              const updated = [
+                ...prevVideos,
+                {
+                  socketId: socketListId,
+                  stream: remoteStream,
+                  autoPlay: true,
+                  playsInline: true,
+                },
+              ];
+              videoRef.current = updated;
+              return updated;
+            });
           };
 
           if (window.localStream !== undefined && window.localStream !== null) {
