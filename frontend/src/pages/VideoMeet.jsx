@@ -13,8 +13,8 @@ import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import io from "socket.io-client";
 import styles from "../styles/videoComponent.module.css";
-
-const server_url = "http://localhost:8080";
+import server from "../environment";
+const server_url = server; // ✅ use server_url instead of hardcoding
 
 const peerConfigConnections = {
   iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
