@@ -116,6 +116,11 @@ export default function VideoMeet() {
 
       socketRef.current.on("user-joined", (id, clients) => {
         clients.forEach((socketListId) => {
+          // ✅ Don't overwrite an existing connection — this causes duplicate ontrack fires
+          // The server sends "user-joined" to ALL clients, so existing peers would get
+          // their RTCPeerConnection replaced and trigger a second ontrack → duplicate tile.
+          if (connections.current[socketListId]) return;
+
           connections.current[socketListId] = new RTCPeerConnection(
             peerConfigConnections,
           );
