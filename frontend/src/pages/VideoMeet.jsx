@@ -9,12 +9,13 @@ import Badge from "@mui/material/Badge";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import io from "socket.io-client";
 import server from "../environment";
 import styles from "../styles/videoComponent.module.css";
-const server_url = server; // ✅ use server_url instead of hardcoding
+
+const server_url = server;
 
 const peerConfigConnections = {
   iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
@@ -29,11 +30,12 @@ export default function VideoMeet() {
   const socketIdRef = React.useRef();
   const localVideoRef = React.useRef();
 
-  // ✅ FIX 1: Separated messages array from input string
+  // ✅ Use a ref for username inside socket callbacks to avoid stale closures
+  const usernameRef = useRef("");
+
   const [messages, setMessages] = React.useState([]);
   const [message, setMessage] = React.useState("");
 
-  // ✅ FIX 5: showModal starts as false
   let [showModal, setModal] = React.useState(false);
   let [newMessages, setNewMessages] = React.useState(0);
 
@@ -45,6 +47,11 @@ export default function VideoMeet() {
   const [askForUsername, setAskForUsername] = React.useState(true);
   const [username, setUsername] = React.useState("");
   const [screenAvailable, setScreenAvailable] = React.useState(true);
+
+  // Keep usernameRef in sync with username state
+  useEffect(() => {
+    usernameRef.current = username;
+  }, [username]);
 
   let gotMessageFromServer = (fromId, message) => {
     let signal = JSON.parse(message);
@@ -81,7 +88,6 @@ export default function VideoMeet() {
     }
   };
 
-  // ✅ FIX 3: addMessage no longer corrupts the messages array
   let addMessage = (data, sender, socketIdSender) => {
     setMessages((prevMessages) => [
       ...prevMessages,
@@ -124,23 +130,33 @@ export default function VideoMeet() {
             }
           };
 
-          connections.current[socketListId].onaddstream = (event) => {
+          // ✅ FIX 1: Use ontrack instead of deprecated onaddstream
+          // onaddstream is not supported on mobile browsers (iOS Safari, Chrome Android)
+          connections.current[socketListId].ontrack = (event) => {
+            // event.streams[0] is the remote MediaStream
+            const remoteStream = event.streams[0];
+
+            if (!remoteStream) return;
+
             let videoExists = videoRef.current.find(
               (v) => v.socketId === socketListId,
             );
 
             if (videoExists) {
-              const updated = videoRef.current.map((v) =>
-                v.socketId === socketListId
-                  ? { ...v, stream: event.stream }
-                  : v,
-              );
-              videoRef.current = updated;
-              setVideos(updated);
+              // Update existing entry only if stream actually changed
+              if (videoExists.stream?.id !== remoteStream.id) {
+                const updated = videoRef.current.map((v) =>
+                  v.socketId === socketListId
+                    ? { ...v, stream: remoteStream }
+                    : v,
+                );
+                videoRef.current = updated;
+                setVideos([...updated]);
+              }
             } else {
               const newVideo = {
                 socketId: socketListId,
-                stream: event.stream,
+                stream: remoteStream,
                 autoPlay: true,
                 playsInline: true,
               };
@@ -154,12 +170,23 @@ export default function VideoMeet() {
           };
 
           if (window.localStream !== undefined && window.localStream !== null) {
-            connections.current[socketListId].addStream(window.localStream);
+            // ✅ FIX 1 cont: use addTrack instead of deprecated addStream
+            window.localStream.getTracks().forEach((track) => {
+              connections.current[socketListId].addTrack(
+                track,
+                window.localStream,
+              );
+            });
           } else {
             let blackSilence = (...args) =>
               new MediaStream([black(...args), silence()]);
             window.localStream = blackSilence();
-            connections.current[socketListId].addStream(window.localStream);
+            window.localStream.getTracks().forEach((track) => {
+              connections.current[socketListId].addTrack(
+                track,
+                window.localStream,
+              );
+            });
           }
         });
 
@@ -168,7 +195,9 @@ export default function VideoMeet() {
             if (id2 === socketIdRef.current) continue;
 
             try {
-              connections.current[id2].addStream(window.localStream);
+              window.localStream.getTracks().forEach((track) => {
+                connections.current[id2].addTrack(track, window.localStream);
+              });
             } catch (err) {
               console.log(err);
             }
@@ -214,7 +243,10 @@ export default function VideoMeet() {
     for (let id in connections.current) {
       if (id === socketIdRef.current) continue;
 
-      connections.current[id].addStream(window.localStream);
+      // ✅ Use addTrack instead of addStream
+      window.localStream.getTracks().forEach((track) => {
+        connections.current[id].addTrack(track, window.localStream);
+      });
 
       connections.current[id].createOffer().then((description) => {
         connections.current[id]
@@ -291,7 +323,10 @@ export default function VideoMeet() {
     }
 
     for (let id in connections.current) {
-      connections.current[id].addStream(window.localStream);
+      // ✅ Use addTrack
+      window.localStream.getTracks().forEach((track) => {
+        connections.current[id].addTrack(track, window.localStream);
+      });
 
       connections.current[id].createOffer().then((description) => {
         connections.current[id].setLocalDescription(description).then(() => {
@@ -384,7 +419,10 @@ export default function VideoMeet() {
     for (let id in connections.current) {
       if (id === socketIdRef.current) continue;
 
-      connections.current[id].addStream(window.localStream);
+      // ✅ Use addTrack
+      window.localStream.getTracks().forEach((track) => {
+        connections.current[id].addTrack(track, window.localStream);
+      });
 
       connections.current[id].createOffer().then((description) => {
         connections.current[id]
@@ -400,6 +438,7 @@ export default function VideoMeet() {
       });
     }
   };
+
   let routeTo = useNavigate();
 
   let handleEndCall = () => {
@@ -413,10 +452,10 @@ export default function VideoMeet() {
     routeTo("/home");
   };
 
-  // ✅ FIX 2: sendMessage now sends `message` (string) not `messages` (array)
+  // ✅ FIX 2: Use usernameRef.current so the closure always gets the latest value
   let sendMessage = () => {
-    socketRef.current.emit("chat-message", message, username);
-    setMessage(""); // ✅ clear input after sending
+    socketRef.current.emit("chat-message", message, usernameRef.current);
+    setMessage("");
   };
 
   let displayMediaOptions = () => {
@@ -471,7 +510,12 @@ export default function VideoMeet() {
                   {messages.length > 0 ? (
                     messages.map((item, index) => (
                       <div style={{ marginBottom: "20px" }} key={index}>
-                        <p style={{ fontWeight: "bold" }}>{item.sender}</p>
+                        {/* ✅ FIX 2: Show "You" for own messages, sender name for others */}
+                        <p style={{ fontWeight: "bold" }}>
+                          {item.socketIdSender === socketIdRef.current
+                            ? "You"
+                            : item.sender || "Unknown"}
+                        </p>
                         <p>{item.data}</p>
                       </div>
                     ))
@@ -480,7 +524,6 @@ export default function VideoMeet() {
                   )}
                 </div>
                 <div className={styles.chattingArea}>
-                  {/* ✅ FIX 1: TextField uses `message` not `messages` */}
                   <TextField
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
@@ -515,7 +558,6 @@ export default function VideoMeet() {
               </IconButton>
             )}
 
-            {/* ✅ FIX 4: reset badge count when opening chat */}
             <Badge badgeContent={newMessages} max={999} color="secondary">
               <IconButton
                 onClick={() => {
