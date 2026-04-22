@@ -269,25 +269,31 @@ export default function VideoMeet() {
   };
 
   let handleAudio = () => {
-    const newAudio = !audio;
-    setAudio(newAudio);
-
-    if (window.localStream) {
-      window.localStream.getAudioTracks().forEach((track) => {
-        track.enabled = newAudio;
-      });
-    }
+    // Only toggle track.enabled — never re-request the stream.
+    // Calling getUserMedia with audio:false drops the track entirely.
+    setAudio((prev) => {
+      const newAudio = !prev;
+      if (window.localStream) {
+        window.localStream.getAudioTracks().forEach((track) => {
+          track.enabled = newAudio;
+        });
+      }
+      return newAudio;
+    });
   };
 
   let handleVideo = () => {
-    const newCameraOn = !cameraOn;
-    setCameraOn(newCameraOn);
-
-    if (window.localStream) {
-      window.localStream.getVideoTracks().forEach((track) => {
-        track.enabled = newCameraOn;
-      });
-    }
+    // Only toggle track.enabled — never re-request the stream.
+    // Calling getUserMedia with video:false drops the track entirely.
+    setCameraOn((prev) => {
+      const newCameraOn = !prev;
+      if (window.localStream) {
+        window.localStream.getVideoTracks().forEach((track) => {
+          track.enabled = newCameraOn;
+        });
+      }
+      return newCameraOn;
+    });
   };
 
   const getPermissions = async () => {
@@ -342,11 +348,9 @@ export default function VideoMeet() {
     return Object.assign(stream.getVideoTracks()[0], { enabled: false });
   };
 
-  useEffect(() => {
-    if (cameraOn !== undefined || audio !== undefined) {
-      getUserMedia();
-    }
-  }, [audio, cameraOn]);
+  // NOTE: We intentionally do NOT watch [audio, cameraOn] here.
+  // Toggling camera/mic only flips track.enabled on the existing stream.
+  // Re-calling getUserMedia on toggle would drop tracks and break the connection.
 
   const getMedia = () => {
     setAudio(audioAvailable);
