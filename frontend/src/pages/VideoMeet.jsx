@@ -12,12 +12,32 @@ import TextField from "@mui/material/TextField";
 import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import io from "socket.io-client";
-import styles from "../styles/videoComponent.module.css";
 import server from "../environment";
-const server_url = server; // ✅ use server_url instead of hardcoding
+import styles from "../styles/videoComponent.module.css";
+const server_url = server;
 
+// FIX 1: Added TURN servers.
+// STUN alone works on same network (2 tabs, same laptop) but fails when
+// phone and laptop are on different networks. TURN relays media in that case.
 const peerConfigConnections = {
-  iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+  iceServers: [
+    { urls: "stun:stun.l.google.com:19302" },
+    {
+      urls: "turn:openrelay.metered.ca:80",
+      username: "openrelayproject",
+      credential: "openrelayproject",
+    },
+    {
+      urls: "turn:openrelay.metered.ca:443",
+      username: "openrelayproject",
+      credential: "openrelayproject",
+    },
+    {
+      urls: "turn:openrelay.metered.ca:443?transport=tcp",
+      username: "openrelayproject",
+      credential: "openrelayproject",
+    },
+  ],
 };
 
 export default function VideoMeet() {
@@ -29,11 +49,9 @@ export default function VideoMeet() {
   const socketIdRef = React.useRef();
   const localVideoRef = React.useRef();
 
-  // ✅ FIX 1: Separated messages array from input string
   const [messages, setMessages] = React.useState([]);
   const [message, setMessage] = React.useState("");
 
-  // ✅ FIX 5: showModal starts as false
   let [showModal, setModal] = React.useState(false);
   let [newMessages, setNewMessages] = React.useState(0);
 
@@ -81,7 +99,6 @@ export default function VideoMeet() {
     }
   };
 
-  // ✅ FIX 3: addMessage no longer corrupts the messages array
   let addMessage = (data, sender, socketIdSender) => {
     setMessages((prevMessages) => [
       ...prevMessages,
@@ -93,14 +110,24 @@ export default function VideoMeet() {
   };
 
   let connectToSocketServer = () => {
-    socketRef.current = io.connect(server_url);
+    // FIX 2: Added polling fallback.
+    // Mobile browsers on cellular data sometimes can't establish a WebSocket
+    // and silently fail. Allowing polling as a fallback keeps the connection alive.
+    socketRef.current = io.connect(server_url, {
+      transports: ["websocket", "polling"],
+    });
 
     socketRef.current.on("signal", gotMessageFromServer);
 
     socketRef.current.on("connect", () => {
       socketIdRef.current = socketRef.current.id;
 
-      socketRef.current.emit("join-call", window.location.href);
+      // FIX 3: Use `url` param instead of window.location.href.
+      // On phone (deployed): window.location.href = "https://meetofrontend.onrender.com/abc"
+      // On laptop (local dev): window.location.href = "http://localhost:3000/abc"
+      // These are different strings → server puts them in different rooms → they never meet.
+      // Using just `url` (the route param) gives the same value on both devices.
+      socketRef.current.emit("join-call", url);
 
       socketRef.current.on("chat-message", addMessage);
 
@@ -400,6 +427,7 @@ export default function VideoMeet() {
       });
     }
   };
+
   let routeTo = useNavigate();
 
   let handleEndCall = () => {
@@ -413,10 +441,9 @@ export default function VideoMeet() {
     routeTo("/home");
   };
 
-  // ✅ FIX 2: sendMessage now sends `message` (string) not `messages` (array)
   let sendMessage = () => {
     socketRef.current.emit("chat-message", message, username);
-    setMessage(""); // ✅ clear input after sending
+    setMessage("");
   };
 
   let displayMediaOptions = () => {
@@ -480,7 +507,6 @@ export default function VideoMeet() {
                   )}
                 </div>
                 <div className={styles.chattingArea}>
-                  {/* ✅ FIX 1: TextField uses `message` not `messages` */}
                   <TextField
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
@@ -515,7 +541,6 @@ export default function VideoMeet() {
               </IconButton>
             )}
 
-            {/* ✅ FIX 4: reset badge count when opening chat */}
             <Badge badgeContent={newMessages} max={999} color="secondary">
               <IconButton
                 onClick={() => {
