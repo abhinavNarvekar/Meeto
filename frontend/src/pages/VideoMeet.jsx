@@ -190,17 +190,11 @@ export default function VideoMeet() {
           }
         });
 
+        // Only the newly joined user (id === our socketId) creates offers.
+        // Tracks are already added in the forEach loop above — do NOT add them again here.
         if (id === socketIdRef.current) {
           for (let id2 in connections.current) {
             if (id2 === socketIdRef.current) continue;
-
-            try {
-              window.localStream.getTracks().forEach((track) => {
-                connections.current[id2].addTrack(track, window.localStream);
-              });
-            } catch (err) {
-              console.log(err);
-            }
 
             connections.current[id2].createOffer().then((description) => {
               connections.current[id2]
