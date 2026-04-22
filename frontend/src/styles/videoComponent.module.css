@@ -19,7 +19,7 @@
   border-radius: 20px;
 }
 
-.buttonContainers {
+.buttonContainer {
   position: absolute;
   width: 100vw;
   bottom: 0;
@@ -64,8 +64,5 @@
   bottom: 0;
 }
 
-
-
-.chattingDisplay{
-  
+.chattingDisplay {
 }
