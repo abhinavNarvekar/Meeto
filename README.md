@@ -1,4 +1,3 @@
-<img width="1440" height="880" alt="image" src="https://github.com/user-attachments/assets/73c2c764-66ac-415c-a915-14551fe442b2" />Meeto — Real-Time Video Chat Application
 
 Meeto is a full-stack real-time video conferencing application that enables seamless communication through video, audio, and live chat. It is built using modern web technologies with secure authentication, responsive design, and deployed for real-world usage.
 
