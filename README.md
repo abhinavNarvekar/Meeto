@@ -3,7 +3,7 @@ Meeto is a full-stack real-time video conferencing application that enables seam
 
 🚀 Live Demo
 
-🌐 Live App: [https://meetobackend.onrender.com](https://meetofrontend.onrender.com/)
+🌐 Live App: (https://meetofrontend.onrender.com/)
 
 
 
